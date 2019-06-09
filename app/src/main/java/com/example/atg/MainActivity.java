@@ -42,11 +42,11 @@ public class MainActivity extends AppCompatActivity {
             switch (item.getItemId()) {
                 case R.id.navigation_home:
                     selectedFragment = new HomeFragment();
-                    return true;
+                    break;
                 case R.id.navigation_search:
                     Log.e("HEnlo", "onNavigationItemSelected: ");
                     selectedFragment = new SearchFragment();
-                    return true;
+                    break;
             }
 
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
