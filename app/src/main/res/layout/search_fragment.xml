@@ -4,17 +4,27 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--<android.support.v7.widget.RecyclerView-->
-    <!--android:id="@+id/recyclerView"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-    <!--</android.support.v7.widget.RecyclerView>-->
+    <EditText
+        android:drawableLeft="@drawable/ic_search_black_24dp"
+        android:id="@+id/edit_text_search"
+        android:layout_toLeftOf="@id/button_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="  Search"
+        android:textSize="24sp"/>
 
-    <TextView
+    <Button
+        android:id="@+id/button_search"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search Fragment"
-        android:textSize="30sp"
-        android:layout_centerInParent="true"/>
+        android:text="Submit"
+        android:layout_alignParentRight="true"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView_search"
+        android:layout_below="@id/edit_text_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
 
 </RelativeLayout>
