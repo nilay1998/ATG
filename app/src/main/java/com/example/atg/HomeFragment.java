@@ -26,50 +26,86 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+import static android.support.constraint.Constraints.TAG;
+
 public class HomeFragment extends Fragment {
 
-    private ArrayList<String> mUrls = new ArrayList<>();
-    private ArrayList<Photo> mPhoto = new ArrayList<>();
+    private ArrayList<String> mUrls =new ArrayList<>();
+    private ArrayList<Photo> mPhoto =new ArrayList<>();
     View rootView;
+    RecyclerViewAdapter recyclerViewAdapter;
+    RecyclerView recyclerView;
+    boolean isAlreadyLoaded=false;
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         rootView = inflater.inflate(R.layout.home_fragment,container,false);
-        final RecyclerView recyclerView = rootView.findViewById(R.id.recyclerView);
-        final RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(getActivity(), mUrls);
+        recyclerView = rootView.findViewById(R.id.recyclerView);
+        recyclerViewAdapter = new RecyclerViewAdapter(getActivity(), mUrls);
         recyclerView.setAdapter(recyclerViewAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(getActivity(),2));
 
-        Retrofit retrofit = NetworkClient.getRetrofitClient();
-        final RequestService requestService = retrofit.create(RequestService.class);
-        Call<Model> call = requestService.requestGet();
-        call.enqueue(new Callback<Model>() {
-            @Override
-            public void onResponse(Call<Model> call, Response<Model> response) {
-                if (response.isSuccessful()) {
-                    mPhoto = new ArrayList<>((Arrays.asList(response.body().getPhotos().getPhoto())));
-                    for (int i = 0; i < mPhoto.size(); i++) {
-                        mUrls.add(mPhoto.get(i).getUrl_s());
+        if(savedInstanceState==null && isAlreadyLoaded==false)
+        {
+            isAlreadyLoaded=true;
+            Retrofit retrofit = NetworkClient.getRetrofitClient();
+            final RequestService requestService = retrofit.create(RequestService.class);
+            Call<Model> call = requestService.requestGet();
+            call.enqueue(new Callback<Model>() {
+                @Override
+                public void onResponse(Call<Model> call, Response<Model> response) {
+                    if (response.isSuccessful()) {
+                        mPhoto = new ArrayList<>((Arrays.asList(response.body().getPhotos().getPhoto())));
+                        for (int i = 0; i < mPhoto.size(); i++) {
+                            mUrls.add(mPhoto.get(i).getUrl_s());
+                        }
+                        recyclerViewAdapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(getActivity(), "Server returned an error " + response.code(), Toast.LENGTH_SHORT).show();
                     }
-                    recyclerViewAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(getActivity(), "Server returned an error " + response.code(), Toast.LENGTH_SHORT).show();
                 }
-            }
 
-            @Override
-            public void onFailure(Call<Model> call, Throwable t) {
-                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("Error", t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<Model> call, Throwable t) {
+                    Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("Error", t.getMessage());
+                }
+            });
+        }
 
+        else if (savedInstanceState != null) {
+            //Restore the fragment's state here
+            Log.e(TAG, "onCreateView: VIEW CREATED");
+            mUrls.clear();
+            for(int i=0;i<savedInstanceState.getStringArrayList("ArrayList").size();i++)
+            {
+                String val=savedInstanceState.getStringArrayList("ArrayList").get(i);
+                mUrls.add(val);
+                Log.i(TAG, "onActivityCreated: "+ val);
+            }
+            int x=savedInstanceState.getInt("abc");
+            Log.e(TAG, "onActivityCreated: "+x);
+            recyclerViewAdapter.notifyDataSetChanged();
+        }
         return rootView;
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.e(TAG, "onSaveInstanceState: CHANGING STATE");
+
+        for(int i=0;i<mUrls.size();i++)
+        {
+            String val=mUrls.get(i);
+            Log.i(TAG, "onActivityCreated: "+ val);
+        }
+//        mUrls.add("HAHAHA");
+        outState.putStringArrayList("ArrayList",mUrls);
+//        outState.putInt("abc",1);
+        super.onSaveInstanceState(outState);
     }
 }
