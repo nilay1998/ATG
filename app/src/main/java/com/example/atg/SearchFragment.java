@@ -3,6 +3,7 @@ package com.example.atg;
 import android.os.Bundle;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.constraint.Constraints;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -92,6 +93,27 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        if (savedInstanceState != null ) {
+            //Restore the fragment's state here
+            Log.e(Constraints.TAG, "onCreateView: VIEW CREATED");
+            mUrls.clear();
+            for(int i=0;i<savedInstanceState.getStringArrayList("ArrayList").size();i++)
+            {
+                String val=savedInstanceState.getStringArrayList("ArrayList").get(i);
+                mUrls.add(val);
+                Log.i(Constraints.TAG, "onActivityCreated: "+ val);
+            }
+            recyclerViewAdapter.notifyDataSetChanged();
+        }
+
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        Log.e(Constraints.TAG, "onSaveInstanceState: CHANGING STATE");
+
+        outState.putStringArrayList("ArrayList",mUrls);
+        super.onSaveInstanceState(outState);
     }
 }

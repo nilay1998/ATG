@@ -76,7 +76,7 @@ public class HomeFragment extends Fragment {
             });
         }
 
-        else if (savedInstanceState != null) {
+        else if (savedInstanceState != null ) {
             //Restore the fragment's state here
             Log.e(TAG, "onCreateView: VIEW CREATED");
             mUrls.clear();
